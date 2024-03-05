@@ -41,7 +41,8 @@ function getMessage() {
 }
 
 function displayMessages(messages) {
-  const messageContainer = document.getElementById("message-container");
+  const messageContainer = document.getElementById("messages");
+  messageContainer.innerHTML = "";
 
   messages.forEach((message) => {
     const messageElement = document.createElement("div");
@@ -50,6 +51,10 @@ function displayMessages(messages) {
     messageContainer.append(messageElement);
   });
 }
+
+setInterval(() => {
+  getMessage();
+}, 1000);
 
 
 document.addEventListener("DOMContentLoaded", () => {
