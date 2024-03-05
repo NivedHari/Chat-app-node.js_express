@@ -11,4 +11,10 @@ router.post(
   messageController.sendMessage
 );
 
+router.get(
+  "/",
+  AuthenticationHandler.authenticateUser,
+  messageController.getMessage
+);
+
 module.exports = router;

@@ -22,8 +22,39 @@ function logout() {
   localStorage.removeItem("token");
 }
 
+function getMessage() {
+  fetch("http://localhost:3000/message/", {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token,
+    },
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      if (data.messages) {
+        displayMessages(data.messages);
+      }
+    })
+    .catch((err) => console.log(err));
+}
+
+function displayMessages(messages) {
+  const messageContainer = document.getElementById("message-container");
+
+  messages.forEach((message) => {
+    const messageElement = document.createElement("div");
+    messageElement.classList.add("message");
+    messageElement.textContent = message.text;
+    messageContainer.append(messageElement);
+  });
+}
+
+
 document.addEventListener("DOMContentLoaded", () => {
   if (localStorage.getItem("token") === null) {
     window.location.href = "/public/signup.html";
   }
+  getMessage();
 });

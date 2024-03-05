@@ -53,37 +53,42 @@ a {
 /* body */
 
 #message-container {
-  background-color: #f2f2f2;
-  padding: 1.25rem;
-  border-radius: 10px; 
-  width:80%; 
-  max-width: 40rem;
-  margin: 1.25rem auto; 
-  height: 40rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
+  overflow-y: auto;
+  max-height: 80vh;
 }
 
 #send-container {
   display: flex;
-  align-self: bottom;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  position: fixed;
+  bottom: 0;
+  width: 50%;
+  background-color: #f2f2f2;
 }
 
 #message-input {
   flex: 1;
-  padding: 0.8rem; 
-  border: 1px solid #ccc; 
-  border-radius: 5px; 
-  outline: none;
+  padding: 8px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
 }
 
 #send-button {
-  padding: 0.625rem 1.25rem; 
-  background-color: #044c6b;
+  padding: 8px 12px;
+  background-color: #007bff;
   color: white;
   border: none;
-  border-radius: 0.3125rem; 
+  border-radius: 4px;
   cursor: pointer;
-  align-items:flex-end;
+  font-size: 16px;
+}
+
+.message {
+  /* background-color: red; */
+  margin: 1rem;
+  width: 50%;
 }

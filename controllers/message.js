@@ -15,3 +15,14 @@ exports.sendMessage = (req, res, next) => {
       res.status(500).json({ error: "Failed to send message" });
     });
 };
+
+exports.getMessage = (req, res, next) => {
+  const user = req.user;
+  Message.findAll({ where: { userId: user.id } })
+    .then((messages) => {
+      return res.json({ messages, user });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
