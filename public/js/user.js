@@ -1,7 +1,9 @@
 const signupForm = document.getElementById("signup-form");
+const loginForm = document.getElementById("login-form");
 const messageSpan = document.getElementById("message");
 
 signupForm.addEventListener("submit", signup);
+loginForm.addEventListener("submit", login);
 
 function signup(event) {
   event.preventDefault();
@@ -39,8 +41,25 @@ function signup(event) {
     })
     .then((data) => {
       messageSpan.textContent = data.message;
-      
     })
+    .catch((err) => {
+      console.log(err);
+    });
+}
+
+function login(event) {
+  event.preventDefault();
+  const email = document.getElementById("lEmail").value;
+  const password = document.getElementById("lPassword").value;
+  const user = { email, password };
+  fetch("http://localhost:3000/user/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(user),
+  })
+    .then()
     .catch((err) => {
       console.log(err);
     });
