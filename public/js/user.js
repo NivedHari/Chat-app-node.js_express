@@ -64,12 +64,13 @@ function login(event) {
       if (response.status === 200) {
         lMessageSpan.style.color = "#11d918";
         signupForm.reset();
+        window.location.href = "/public/main.html";
       }
       return response.json();
     }).then(data=>{
       lMessageSpan.textContent = data.message ;
       localStorage.setItem("token", data.token);
-      window.location.href = "/public/main.html";
+      
     })
     .catch((err) => {
       console.log(err);

@@ -5,7 +5,11 @@ const cors = require("cors");
 
 const sequelize = require("./util/database");
 
+const User = require("./models/user");
+const Message = require("./models/message");
+
 const userRoutes = require("./routes/user");
+const messageRoutes = require("./routes/message");
 
 const app = express();
 app.use(
@@ -19,6 +23,10 @@ app.use(express.urlencoded({ extended: false }));
 // app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/user", userRoutes);
+app.use("/message", messageRoutes);
+
+User.hasMany(Message);
+Message.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 
 const PORT = process.env.PORT;
 sequelize
