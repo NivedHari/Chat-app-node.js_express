@@ -69,6 +69,7 @@ function login(event) {
     }).then(data=>{
       lMessageSpan.textContent = data.message ;
       localStorage.setItem("token", data.token);
+      window.location.href = "/public/main.html";
     })
     .catch((err) => {
       console.log(err);
