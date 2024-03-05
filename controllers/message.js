@@ -1,4 +1,6 @@
 const Message = require("../models/message");
+const User = require("../models/user");
+const { Op } = require("sequelize");
 
 exports.sendMessage = (req, res, next) => {
   const { message } = req.body;
@@ -7,8 +9,13 @@ exports.sendMessage = (req, res, next) => {
     .createMessage({
       text: message,
     })
-    .then(() => {
-      res.status(200).json({ message: "Message sent successfully" });
+    .then((message) => {
+      const newMsg = {
+        id: message.id,
+        name: user.name,
+        message: message.text,
+      };
+      res.status(200).json({ newMsg });
     })
     .catch((err) => {
       console.log(err);
@@ -17,12 +24,30 @@ exports.sendMessage = (req, res, next) => {
 };
 
 exports.getMessage = (req, res, next) => {
-  const user = req.user;
-  Message.findAll({ where: { userId: user.id } })
-    .then((messages) => {
-      return res.json({ messages, user });
+  const { lastMsgId } = req.query;
+  let whereCondition = {};
+  if (lastMsgId) {
+    whereCondition = {
+      id: {
+        [Op.lt]: lastMsgId,
+      },
+    };
+  }
+  Message.findAll({
+    where: whereCondition,
+    include: { model: User, attributes: ["name"] },
+  })
+    .then((data) => {
+      const messages = data.map((msg) => ({
+        id: msg.id,
+        name: msg.user.name,
+        message: msg.text,
+      }));
+      // console.log(messages);
+      return res.json({ messages });
     })
     .catch((err) => {
       console.log(err);
+      res.status(500).json({ error: "Failed to fetch messages" });
     });
 };
