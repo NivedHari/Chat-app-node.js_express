@@ -33,7 +33,6 @@ a {
   justify-content: center;
   text-align: center;
   margin: auto;
-margin-top: 2rem;
 }
 
 .logo {
@@ -144,6 +143,10 @@ margin-top: 2rem;
 }
 .signup label:hover {
   text-decoration: underline;
+}
+
+.message-container{
+  text-align: center;
 }
 
 @media only screen and (max-width: 768px) {
