@@ -11,6 +11,7 @@
     <title>ChatsApp</title>
   </head>
   <body>
+    <div id="overlay"></div>
     <div class="navbar">
       <div class="nav-content">
         <div class="logo">
@@ -21,17 +22,44 @@
         </div>
       </div>
     </div>
-    <div class="chat-container">
-      <div class="message-container" id="message-container">
-        <div class="message" id="messages"></div>
+    <div class="container">
+      <div class="group-container">
+        <div class="group-container__header">
+          <h1>Groups</h1>
+          <span id="create-btn">+</span>
+        </div>
+
+        <ul id="groups-list"></ul>
       </div>
-      <form id="send-container" class="send-container">
-        <input type="text" id="message-input" placeholder="Type your message..." />
-        <button type="submit" id="send-button">Send</button>
+      <div>
+        <div class="chat-name" id="chat-name"></div>
+        <div class="chat-container">
+          <div class="message-container" id="message-container">
+            <div class="message" id="messages"></div>
+          </div>
+          <form id="send-container" class="send-container">
+            <input
+              type="text"
+              id="message-input"
+              placeholder="Type your message..."
+            />
+            <input type="hidden" id="group_id" />
+            <button type="submit" class="send-button">Send</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="group-form__div">
+      <form id="create-group">
+        <h2>Create a Group</h2>
+        <input type="text" id="group-name" placeholder="Group Name" />
+        <input type="text" placeholder="Members" />
+        <div>
+          <ul id="userList"></ul>
+        </div>
+        <button type="submit">Create Group</button>
       </form>
     </div>
-    
-
     <script src="/public/js/main.js"></script>
   </body>
 </html>

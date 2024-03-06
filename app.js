@@ -7,6 +7,8 @@ const sequelize = require("./util/database");
 
 const User = require("./models/user");
 const Message = require("./models/message");
+const Group = require("./models/group");
+const GroupMember = require("./models/group-member");
 
 const userRoutes = require("./routes/user");
 const messageRoutes = require("./routes/message");
@@ -26,7 +28,21 @@ app.use("/user", userRoutes);
 app.use("/message", messageRoutes);
 
 User.hasMany(Message);
-Message.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
+Message.belongsTo(User, {
+  constraints: true,
+  onDelete: "CASCADE",
+  foreignKey: "userId",
+});
+
+User.belongsToMany(Group, { through: GroupMember });
+Group.belongsToMany(User, { through: GroupMember });
+Group.belongsTo(User, {
+  foreignKey: "AdminId",
+  constraints: true,
+  onDelete: "CASCADE",
+});
+Group.hasMany(Message);
+Message.belongsTo(Group);
 
 const PORT = process.env.PORT;
 sequelize
