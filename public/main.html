@@ -32,7 +32,10 @@
         <ul id="groups-list"></ul>
       </div>
       <div>
-        <div class="chat-name" id="chat-name"></div>
+        <div class="chat-name" id="chat-name">
+          <h1 id="groupHeader"></h1>
+          <span class="edit-Btn"></span>
+        </div>
         <div class="chat-container">
           <div class="message-container" id="message-container">
             <div class="message" id="messages"></div>
@@ -58,6 +61,18 @@
           <ul id="userList"></ul>
         </div>
         <button type="submit">Create Group</button>
+      </form>
+    </div>
+    <div class="edit-group-form__div">
+      <form id="edit-group">
+        <h2>Edit Group Details</h2>
+        <input type="text" id="edit-group-name" placeholder="Group Name" />
+        <input type="text" placeholder="Members" />
+        <input type="hidden" id="g_id" />
+        <div>
+          <ul id="editList"></ul>
+        </div>
+        <button type="submit">Submit</button>
       </form>
     </div>
     <script src="/public/js/main.js"></script>

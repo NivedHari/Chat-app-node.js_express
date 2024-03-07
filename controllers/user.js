@@ -88,9 +88,6 @@ exports.createGroup = async (req, res, next) => {
     const user = req.user;
     const { name, membersNo, membersIds } = req.body;
     membersIds.push(user.id);
-    console.log("Name:", name);
-    console.log("members:", membersNo);
-    console.log("ids:", membersIds);
     const group = await user.createGroup({
       name,
       members: membersNo,
@@ -126,16 +123,18 @@ exports.getMyGroups = async (req, res, next) => {
   const groups = await user.getGroups();
   return res
     .status(200)
-    .json({ groups, message: "All groups succesfully fetched" });
+    .json({ groups, user, message: "All groups succesfully fetched" });
 };
 
 exports.getGroup = async (req, res, next) => {
+  const user = req.user;
+  console.log(user);
   try {
     const { groupId } = req.query;
     const group = await Group.findOne({ where: { id: Number(groupId) } });
     res
       .status(200)
-      .json({ group, message: "Group details succesfully fetched" });
+      .json({ group, user, message: "Group details succesfully fetched" });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Internal Server error!" });
@@ -143,6 +142,7 @@ exports.getGroup = async (req, res, next) => {
 };
 
 exports.getGroupMessages = async (req, res, next) => {
+  const user = req.user;
   const { groupId } = req.query;
   const groupMessages = await Message.findAll({
     include: [
@@ -164,12 +164,75 @@ exports.getGroupMessages = async (req, res, next) => {
         name: user.name,
         userId: user.id,
         message: message.text,
+        timestamp: message.date_time,
       };
     }
   });
   return res
     .status(200)
-    .json({ messages, message: "User chat History Fetched" });
+    .json({ messages, user, message: "User chat History Fetched" });
+};
+
+exports.getGroupDetails = async (req, res, next) => {
+  const user = req.user;
+  const { groupId } = req.query;
+  try {
+    const group = await Group.findOne({
+      where: { id: groupId },
+      include: [
+        {
+          model: User,
+          attributes: ["id", "name"],
+        },
+      ],
+    });
+    if (!group) {
+      return res.status(404).json({ message: "Group not found" });
+    }
+    const userReponse = await User.findAll({
+      where: {
+        id: {
+          [Op.not]: user.id,
+        },
+      },
+    });
+    const allUsers = userReponse.map(({ id, name }) => ({ id, name }));
+    const groupMembers = group.users.map(({ id, name }) => ({ id, name }));
+    const groupName = group.name;
+    return res.status(200).json({
+      allUsers,
+      groupMembers,
+      groupName,
+      groupId,
+      message: "Group Details Fetched",
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: "Internal Server error!" });
+  }
+};
+
+exports.editGroup = async (req, res, next) => {
+  const user = req.user;
+  const { groupId } = req.query;
+  const { name, membersNo, membersIds } = req.body;
+
+  const group = await Group.findOne({ where: { id: groupId } });
+  const updatedGroup = await group.update({
+    name,
+    members: membersNo,
+    AdminId: user.id,
+  });
+  membersIds.push(user.id);
+  await updatedGroup.setUsers(null);
+  await updatedGroup.addUsers(
+    membersIds.map((users) => {
+      return Number(users);
+    })
+  );
+  return res
+    .status(200)
+    .json({ updatedGroup, message: "Group is succesfully updated" });
 };
 
 function generateToken(id, name, email, phone) {
@@ -178,9 +241,3 @@ function generateToken(id, name, email, phone) {
     process.env.TOKEN
   );
 }
-
-// const newMsg = {
-//   id: messageResponse.id,
-//   name: user.name,
-//   message: messageResponse.text,
-// };

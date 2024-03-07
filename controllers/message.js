@@ -40,6 +40,7 @@ exports.sendMessage = async (req, res, next) => {
 };
 
 exports.getMessage = (req, res, next) => {
+  const user = req.user;
   const { lastMsgId } = req.query;
   let whereCondition = {};
   if (lastMsgId) {
@@ -51,20 +52,20 @@ exports.getMessage = (req, res, next) => {
   }
   Message.findAll({
     where: whereCondition,
-    include: { model: User, attributes: ["name"] },
+    include: { model: User, attributes: ["name", "id"] },
   })
     .then((data) => {
       const messages = data.map((msg) => ({
         id: msg.id,
         name: msg.user.name,
         message: msg.text,
+        timestamp: msg.date_time,
+        userId: msg.user.id,
       }));
-      // console.log(messages);
-      return res.json({ messages });
+      return res.json({ messages, user });
     })
     .catch((err) => {
       console.log(err);
       res.status(500).json({ error: "Failed to fetch messages" });
     });
 };
-

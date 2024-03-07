@@ -1,14 +1,19 @@
 const messageForm = document.getElementById("send-container");
 const createGroupForm = document.getElementById("create-group");
+const editGroupForm = document.getElementById("edit-group");
 const token = localStorage.getItem("token");
 const logoutBtn = document.getElementById("logout");
 const createBtn = document.getElementById("create-btn");
+const editBtn = document.querySelector(".edit-Btn");
 const groupFormDiv = document.querySelector(".group-form__div");
+const editFormDiv = document.querySelector(".edit-group-form__div");
 const groupList = document.getElementById("groups-list");
 const groupName = document.querySelector(".chat-name");
+const groupHeader = document.getElementById("groupHeader");
 
 messageForm.addEventListener("submit", sendMessage);
 createGroupForm.addEventListener("submit", createGroup);
+editGroupForm.addEventListener("submit", editGroup);
 logoutBtn.addEventListener("click", logout);
 
 function sendMessage(event) {
@@ -32,15 +37,6 @@ function sendMessage(event) {
       return response.json();
     })
     .then((data) => {
-      // const message = data.newMsg;
-      // console.log(message);
-      // let messages = JSON.parse(localStorage.getItem("messages")) || [];
-      // messages.push(message);
-      // if (messages.length > 10) {
-      //   messages = messages.slice(-10);
-      // }
-      // localStorage.setItem("messages", JSON.stringify(messages));
-      // getMessage();
       messageForm.reset();
     })
     .catch((err) => {
@@ -49,6 +45,7 @@ function sendMessage(event) {
 }
 function logout() {
   localStorage.removeItem("token");
+  window.location.href = "/public/signup.html";
 }
 
 function getMessage() {
@@ -57,7 +54,6 @@ function getMessage() {
   let url;
   if (messages.length > 0) {
     lastMsgId = messages[messages.length - 1].id;
-    console.log(lastMsgId);
     url = `http://localhost:3000/message?lastMsgId=${lastMsgId}`;
   } else {
     url = `http://localhost:3000/message`;
@@ -73,13 +69,13 @@ function getMessage() {
       return response.json();
     })
     .then((data) => {
+      const userId = data.user.id;
       if (data.messages) {
         const newMessages = data.messages;
         const allMessages = [...messages, ...newMessages];
-        console.log("new from then", newMessages);
         let lastMsgs = allMessages;
         lastMsgs = allMessages.slice(-1000);
-        displayMessages(allMessages);
+        displayMessages(allMessages, userId);
         localStorage.setItem("messages", JSON.stringify(lastMsgs));
       }
     })
@@ -88,22 +84,66 @@ function getMessage() {
 
 async function showGroupMessages(groupId) {
   const MessageResponse = await fetch(
-    `http://localhost:3000/user/get-group-messages?groupId=${groupId}`
+    `http://localhost:3000/user/get-group-messages?groupId=${groupId}`,
+    {
+      headers: {
+        Authorization: token,
+      },
+    }
   );
   const data = await MessageResponse.json();
-  // console.log(data.messages);
-  displayMessages(data.messages);
+  displayMessages(data.messages, data.user.id);
 }
 
-function displayMessages(messages) {
+function displayMessages(messages, userId) {
   const messageContainer = document.getElementById("messages");
   messageContainer.innerHTML = "";
 
   messages.forEach((message) => {
+    const date = new Date(message.timestamp);
+    const options = {
+      // year: "numeric",
+      // month: "short",
+      // day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+    const formattedDate = date.toLocaleString("en-US", options);
     const messageElement = document.createElement("li");
     messageElement.classList.add("message");
-    messageElement.textContent = `${message.name}: ${message.message}`;
-    messageContainer.append(messageElement);
+    const messageWrapper = document.createElement("div");
+    messageWrapper.className = "message_wrapper";
+    if (message.userId === userId) {
+      messageElement.classList.add("sender_class");
+    } else {
+      messageElement.classList.add("receiver_class");
+    }
+
+    const sender = document.createElement("span");
+    sender.className = "sender-name";
+    sender.textContent = message.name;
+
+    const messageContent = document.createElement("span");
+    messageContent.className = "message-content";
+    messageContent.textContent = message.message;
+
+    const time = document.createElement("span");
+    time.className = "timestamp";
+    time.textContent = formattedDate;
+
+    const messageDiv = document.createElement("div");
+    messageDiv.className = "message_div";
+    messageDiv.appendChild(sender);
+    messageDiv.appendChild(messageContent);
+    messageDiv.appendChild(time);
+
+    messageElement.appendChild(messageDiv);
+    if (message.userId === userId) {
+      messageWrapper.appendChild(messageElement);
+      messageContainer.append(messageWrapper);
+    } else {
+      messageContainer.append(messageElement);
+    }
   });
 }
 
@@ -116,7 +156,7 @@ async function showGroup() {
     },
   });
   const data = await groupsResponse.json();
-  console.log(data);
+  const userId = data.user.id;
 
   const commonGroupItem = document.createElement("li");
   commonGroupItem.textContent = "Common Group";
@@ -136,7 +176,7 @@ async function showGroup() {
     groupItem.textContent = item.name;
     groupItem.className = "clickable";
     groupItem.addEventListener("click", () => {
-      showGroupChat(item.id);
+      showGroupChat(item.id, userId);
       localStorage.setItem("groupId", item.id);
     });
     const membersItem = document.createElement("span");
@@ -147,10 +187,9 @@ async function showGroup() {
   });
 }
 
-async function showGroupChat(id) {
+async function showGroupChat(id, userId) {
   const groupId = id;
-
-  setupGroup(groupId);
+  setupGroup(groupId, userId);
   if (groupId === 0) {
     getMessage();
   } else {
@@ -158,23 +197,39 @@ async function showGroupChat(id) {
   }
 }
 
-async function setupGroup(groupId) {
+async function setupGroup(groupId, userId) {
+  const token = localStorage.getItem("token");
   if (groupId === 0) {
     groupName.innerHTML = "";
-    const groupHeader = document.createElement("h1");
-    groupHeader.textContent = "Common Group";
+    groupHeader.innerText = "Common Group";
     groupName.appendChild(groupHeader);
+
     document.getElementById("group_id").value = groupId;
-  } else {
+  } else if (groupId > 0) {
     const response = await fetch(
-      `http://localhost:3000/user/get-group?groupId=${groupId}`
+      `http://localhost:3000/user/get-group?groupId=${groupId}`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
     );
     const data = await response.json();
-    // console.log(data.group);
+    // console.log(data.user);
     groupName.innerHTML = "";
-    const groupHeader = document.createElement("h1");
-    groupHeader.textContent = data.group.name;
+    groupHeader.innerText = data.group.name;
     groupName.appendChild(groupHeader);
+
+    editBtn.classList.add("material-symbols-outlined");
+    editBtn.id = groupId;
+    editBtn.textContent = "edit";
+    groupName.appendChild(editBtn);
+    if (+data.user.id !== +data.group.AdminId) {
+      editBtn.style.display = "none";
+    } else {
+      editBtn.style.display = "block";
+    }
+
     document.getElementById("group_id").value = groupId;
   }
 }
@@ -222,7 +277,6 @@ async function showAllUser() {
       throw new Error("Failed to fetch users");
     }
     const data = await userResponse.json();
-    console.log(data.users);
 
     const userList = document.getElementById("userList");
     userList.innerHTML = "";
@@ -255,6 +309,85 @@ async function showAllUser() {
   }
 }
 
+async function getGroupDetails(groupId) {
+  const token = localStorage.getItem("token");
+  const userResponse = await fetch(
+    `http://localhost:3000/user/get-group-details?groupId=${groupId}`,
+    {
+      headers: {
+        Authorization: token,
+      },
+    }
+  );
+  const responseData = await userResponse.json();
+  console.log(responseData);
+  document.getElementById("edit-group-name").value = responseData.groupName;
+  const editList = document.getElementById("editList");
+  editList.innerHTML = "";
+  document.getElementById("g_id").value = responseData.groupId;
+
+  responseData.allUsers.forEach((user) => {
+    const listItem = document.createElement("li");
+    listItem.classList.add("users-li");
+
+    const div = document.createElement("div");
+    div.classList.add("user-div");
+
+    const h6 = document.createElement("h6");
+    h6.innerHTML = `<strong>${user.name}</strong>`;
+
+    div.appendChild(h6);
+
+    const input = document.createElement("input");
+    input.setAttribute("type", "checkbox");
+    input.classList.add("form-check-inline");
+    input.setAttribute("name", "users");
+    input.setAttribute("value", user.id);
+    responseData.groupMembers.filter((member) => {
+      if (member.id === user.id) {
+        input.setAttribute("checked", "checked");
+      }
+    });
+
+    listItem.appendChild(div);
+    listItem.appendChild(input);
+
+    editList.appendChild(listItem);
+  });
+}
+
+function editGroup(event) {
+  event.preventDefault();
+  const token = localStorage.getItem("token");
+  const groupId = document.getElementById("g_id").value;
+  const groupName = document.getElementById("edit-group-name").value;
+  const selectedUsers = Array.from(
+    document.querySelectorAll('input[name="users"]:checked')
+  ).map((checkbox) => checkbox.value);
+  const data = {
+    name: groupName,
+    membersNo: selectedUsers.length + 1,
+    membersIds: selectedUsers,
+  };
+  fetch(`http://localhost:3000/user/edit-group?groupId=${groupId}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token,
+    },
+    body: JSON.stringify(data),
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      alert(data.message);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
+
 // setInterval(() => {
 //   getMessage();
 // }, 1000);
@@ -263,12 +396,45 @@ createBtn.addEventListener("click", function () {
   showAllUser();
   groupFormDiv.style.display = "block";
   document.getElementById("overlay").style.display = "block";
+
+  groupFormDiv.offsetHeight;
+  document.getElementById("overlay").offsetHeight;
+
+  groupFormDiv.style.opacity = "1";
+  groupFormDiv.style.transform = "translateY(0)";
+  document.getElementById("overlay").style.opacity = "1";
+});
+
+editBtn.addEventListener("click", function (event) {
+  const groupId = event.target.id;
+  getGroupDetails(groupId);
+  editFormDiv.style.display = "block";
+  document.getElementById("overlay").style.display = "block";
+
+  editFormDiv.offsetHeight;
+  document.getElementById("overlay").offsetHeight;
+
+  editFormDiv.style.opacity = "1";
+  editFormDiv.style.transform = "translateY(0)";
+  document.getElementById("overlay").style.opacity = "1";
 });
 
 window.addEventListener("click", function (event) {
-  if (event.target !== createBtn && !groupFormDiv.contains(event.target)) {
+  if (
+    event.target !== createBtn &&
+    !groupFormDiv.contains(event.target) &&
+    event.target !== editBtn &&
+    !editFormDiv.contains(event.target)
+  ) {
     groupFormDiv.style.display = "none";
+    editFormDiv.style.display = "none";
     document.getElementById("overlay").style.display = "none";
+
+    groupFormDiv.style.opacity = "0";
+    editFormDiv.style.opacity = "0";
+    groupFormDiv.style.transform = "translateY(-20px)";
+    editFormDiv.style.transform = "translateY(-20px)";
+    document.getElementById("overlay").style.opacity = "0";
   }
 });
 
@@ -279,10 +445,7 @@ document.addEventListener("DOMContentLoaded", () => {
   showGroup();
   const groupNo = localStorage.getItem("groupId");
   if (groupNo) {
-    if (groupNo === 0) {
-      showGroupChat(0);
-    } else {
-      showGroupChat(groupNo);
-    }
+    const groupIdInt = parseInt(groupNo, 10);
+    showGroupChat(groupIdInt);
   }
 });
