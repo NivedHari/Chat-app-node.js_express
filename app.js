@@ -1,5 +1,6 @@
 const express = require("express");
 require("dotenv").config();
+const helmet = require("helmet");
 const path = require("path");
 const cors = require("cors");
 
@@ -12,6 +13,7 @@ const GroupMember = require("./models/group-member");
 
 const userRoutes = require("./routes/user");
 const messageRoutes = require("./routes/message");
+const pageRoutes = require("./routes/page");
 
 const app = express();
 app.use(
@@ -22,10 +24,12 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "public")));
+app.use(helmet());
 
 app.use("/user", userRoutes);
 app.use("/message", messageRoutes);
+app.use(pageRoutes);
 
 User.hasMany(Message);
 Message.belongsTo(User, {

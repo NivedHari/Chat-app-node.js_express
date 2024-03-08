@@ -20,7 +20,7 @@ function signup(event) {
     phone,
     password,
   };
-  fetch("http://localhost:3000/user/signup", {
+  fetch("/user/signup", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -50,7 +50,7 @@ function login(event) {
   const email = document.getElementById("lEmail").value;
   const password = document.getElementById("lPassword").value;
   const user = { email, password };
-  fetch("http://localhost:3000/user/login", {
+  fetch("/user/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -64,7 +64,7 @@ function login(event) {
       if (response.status === 200) {
         lMessageSpan.style.color = "#11d918";
         signupForm.reset();
-        window.location.href = "/public/main.html";
+        window.location.href = "/chat";
       }
       return response.json();
     }).then(data=>{

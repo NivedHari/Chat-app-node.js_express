@@ -25,7 +25,7 @@ function sendMessage(event) {
     groupId,
   };
   console.log(data);
-  fetch(`http://localhost:3000/message/send`, {
+  fetch(`/message/send`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -53,7 +53,7 @@ function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("messages");
   localStorage.removeItem("groupId");
-  window.location.href = "/public/signup.html";
+  window.location.href = "/login";
 }
 
 function getMessage() {
@@ -62,9 +62,9 @@ function getMessage() {
   let url;
   if (messages.length > 0) {
     lastMsgId = messages[messages.length - 1].id;
-    url = `http://localhost:3000/message?lastMsgId=${lastMsgId}`;
+    url = `/message?lastMsgId=${lastMsgId}`;
   } else {
-    url = `http://localhost:3000/message`;
+    url = `/message`;
   }
 
   fetch(url, {
@@ -92,7 +92,7 @@ function getMessage() {
 
 async function showGroupMessages(groupId) {
   const MessageResponse = await fetch(
-    `http://localhost:3000/user/get-group-messages?groupId=${groupId}`,
+    `/user/get-group-messages?groupId=${groupId}`,
     {
       headers: {
         Authorization: token,
@@ -158,7 +158,7 @@ function displayMessages(messages, userId) {
 
 async function showGroup() {
   const token = localStorage.getItem("token");
-  const groupsResponse = await fetch(`http://localhost:3000/user/getGroups`, {
+  const groupsResponse = await fetch(`/user/getGroups`, {
     headers: {
       "Content-Type": "application/json",
       Authorization: token,
@@ -220,14 +220,11 @@ async function setupGroup(groupId, userId) {
 
     document.getElementById("group_id").value = groupId;
   } else if (groupId > 0) {
-    const response = await fetch(
-      `http://localhost:3000/user/get-group?groupId=${groupId}`,
-      {
-        headers: {
-          Authorization: token,
-        },
-      }
-    );
+    const response = await fetch(`/user/get-group?groupId=${groupId}`, {
+      headers: {
+        Authorization: token,
+      },
+    });
     const data = await response.json();
     groupName.innerHTML = "";
     groupHeader.innerText = data.group.name;
@@ -260,7 +257,7 @@ function createGroup(event) {
     membersIds: selectedUsers,
   };
 
-  fetch("http://localhost:3000/user/create-group", {
+  fetch("/user/create-group", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -284,7 +281,7 @@ function createGroup(event) {
 async function showAllUser() {
   const token = localStorage.getItem("token");
   try {
-    const userResponse = await fetch("http://localhost:3000/user/getusers", {
+    const userResponse = await fetch("/user/getusers", {
       headers: {
         Authorization: token,
       },
@@ -328,7 +325,7 @@ async function showAllUser() {
 async function getGroupDetails(groupId) {
   const token = localStorage.getItem("token");
   const userResponse = await fetch(
-    `http://localhost:3000/user/get-group-details?groupId=${groupId}`,
+    `/user/get-group-details?groupId=${groupId}`,
     {
       headers: {
         Authorization: token,
@@ -384,7 +381,7 @@ function editGroup(event) {
     membersNo: selectedUsers.length + 1,
     membersIds: selectedUsers,
   };
-  fetch(`http://localhost:3000/user/edit-group?groupId=${groupId}`, {
+  fetch(`/user/edit-group?groupId=${groupId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -403,15 +400,6 @@ function editGroup(event) {
       console.log(err);
     });
 }
-
-// setInterval(() => {
-//   const groupNo = localStorage.getItem("groupId");
-//   if (+groupNo === 0) {
-//     getMessage();
-//   } else {
-//     showGroupMessages(groupNo);
-//   }
-// }, 1000);
 
 createBtn.addEventListener("click", function () {
   showAllUser();
@@ -463,6 +451,17 @@ function setUser(userName) {
   document.getElementById("user-name").style.display = "block";
   document.getElementById("user-name").innerText = userName;
 }
+
+setInterval(() => {
+  const groupNo = localStorage.getItem("groupId");
+  if (groupNo) {
+    if (+groupNo === 0) {
+      getMessage();
+    } else {
+      showGroupMessages(groupNo);
+    }
+  }
+}, 1000);
 
 document.addEventListener("DOMContentLoaded", () => {
   if (localStorage.getItem("token") === null) {
