@@ -1,0 +1,146 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", Arial, sans-serif;
+}
+
+/* nav */
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.navbar {
+  border-bottom: 1px solid #ccccccbf;
+  background-color: #044c6b;
+  color: white;
+  padding: 10px 0;
+  text-align: left;
+  align-items: left;
+  justify-content: center;
+}
+
+.nav-content {
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.logo {
+  font-size: 1.2rem;
+  font-weight: bolder;
+  margin-left: 2rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-align: center;
+}
+
+.logo span {
+  margin-left: 0.5rem;
+}
+
+.user-actions {
+  margin-right: 2rem;
+  font-size: 1rem;
+}
+
+#login {
+  margin-right: 1rem;
+}
+
+#login {
+  background-color: white;
+  color: #044c6b;
+  padding: 0.2rem 1rem;
+  border-radius: 15px;
+}
+
+/* body */
+
+.body-content_1 img {
+  margin: 3rem;
+  width: 600px;
+  height: auto;
+}
+
+.body-content_1 {
+  margin-top: 5rem;
+  display: grid;
+  grid-template-columns: 2fr auto;
+}
+
+.intro {
+  font-size: 1.2rem;
+  text-align: left;
+  margin: auto 2rem;
+}
+
+.intro h1 {
+  font-size: 2.5rem;
+}
+.intro span {
+  font-size: 3.5rem;
+  color: #044c6b;
+}
+
+.intro p{
+    line-height: 2rem;
+}
+
+.intro button {
+  margin-top: 1rem;
+  background-color: #044c6b;
+  color: white;
+  padding: 0.8rem 2rem;
+  border-radius: 30px;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+}
+
+.intro button:hover {
+  background-color: #076f9b;
+  cursor: pointer;
+}
+
+@media only screen and (max-width: 768px) {
+  .body-content_1 {
+    margin-top: 0;
+    grid-template-columns: 1fr;
+  }
+
+  .body-content_1 img {
+    width: 100%;
+    height: auto;
+    margin: 0;
+  }
+
+  .intro {
+    font-size: 1rem;
+    margin: 2rem;
+    text-align: justify;
+  }
+
+
+  .intro h1 {
+    font-size: 1.3rem;
+  }
+  .intro span {
+    font-size: 1.7rem;
+    color: #044c6b;
+  }
+
+  .logo {
+    margin-left: 1rem;
+  }
+
+  .user-actions {
+    margin-right: 0.5rem;
+  }
+}

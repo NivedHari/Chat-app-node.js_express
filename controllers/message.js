@@ -31,12 +31,6 @@ exports.sendMessage = async (req, res, next) => {
     return response.status(500).json({ message: "Internal Server error!" });
   }
 
-  // res.status(200).json({ newMsg });
-
-  // catch((err) => {
-  //   console.log(err);
-  //   res.status(500).json({ error: "Failed to send message" });
-  // });
 };
 
 exports.getMessage = (req, res, next) => {

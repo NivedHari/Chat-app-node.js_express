@@ -76,7 +76,6 @@ exports.getAllUsers = (req, res, next) => {
   })
     .then((users) => {
       return res.status(200).json({ users });
-      // console.log(users);
     })
     .catch((err) => {
       console.log(err);
@@ -86,8 +85,9 @@ exports.getAllUsers = (req, res, next) => {
 exports.createGroup = async (req, res, next) => {
   try {
     const user = req.user;
-    const { name, membersNo, membersIds } = req.body;
+    const { name, membersIds } = req.body;
     membersIds.push(user.id);
+    membersNo = membersIds.length;
     const group = await user.createGroup({
       name,
       members: membersNo,
@@ -100,7 +100,7 @@ exports.createGroup = async (req, res, next) => {
     );
     return res
       .status(200)
-      .json({ group, message: "Group is succesfylly created" });
+      .json({ group, message: "Group is succesfully created" });
   } catch (err) {
     console.log(err);
   }
@@ -128,7 +128,6 @@ exports.getMyGroups = async (req, res, next) => {
 
 exports.getGroup = async (req, res, next) => {
   const user = req.user;
-  console.log(user);
   try {
     const { groupId } = req.query;
     const group = await Group.findOne({ where: { id: Number(groupId) } });

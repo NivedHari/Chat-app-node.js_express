@@ -8,6 +8,24 @@
 body {
   justify-content: center;
 }
+
+.message-container::-webkit-scrollbar {
+  width: 12px;
+}
+
+.message-container::-webkit-scrollbar-track {
+  background: #ddf1f9;
+}
+
+.message-container::-webkit-scrollbar-thumb {
+  background-color: #044c6b;
+  border-radius: 10px;
+}
+
+.message-container::-webkit-scrollbar-thumb:hover {
+  background-color: #0e6d96;
+}
+
 /* nav */
 
 a {
@@ -48,6 +66,17 @@ a {
 .user-actions {
   margin-right: 2rem;
   font-size: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+#user-name {
+  margin: auto;
+  margin-right: 3rem;
+  border: 1px solid whitesmoke;
+  padding: 0.2rem 1rem;
+  border-radius: 10px;
+  display: none;
 }
 
 /* body */
@@ -58,7 +87,38 @@ body {
   font-family: Arial, sans-serif;
 }
 
+.welcome{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  background-color: #e6fafc;
+  width: 100%;
+  height: 100%;
+}
+
+.welcome img{
+  width: 400px;
+  height: auto;
+}
+.welcome span{
+  font-size: 1.5rem;
+  font-family: inherit;
+  font-weight: 600;
+}
+
+#intro_second{
+  display: block;
+  margin-top: 1rem;
+  font-weight: 100;
+  font-size: 1rem;
+}
+
+
+
 .chat-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 80vh;
@@ -68,8 +128,12 @@ body {
 .message-container {
   flex: 1;
   overflow-y: scroll;
-  background-color: whitesmoke;
-  border-radius: 10px;
+  background-color: #f1feff;
+  /* background-image: linear-gradient(180deg, #f1feff, #d7fcff); */
+  background-color: #d7fcff;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  flex-direction: column-reverse;
 }
 
 .sender_class {
@@ -82,7 +146,9 @@ body {
   margin-right: 1rem;
   list-style: none;
   border-radius: 20px;
-  background-color: #ddf1f9;
+  background-color: #044c6b;
+  color: white;
+  box-shadow: 2px -2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .receiver_class {
@@ -94,8 +160,9 @@ body {
   list-style: none;
   border-radius: 20px;
   width: fit-content;
-  background-color: #dfdfdf;
+  background-color: white;
   text-align: left;
+  box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .message_wrapper {
@@ -104,16 +171,6 @@ body {
   justify-content: center;
   align-items: end;
 }
-
-/* .message li {
-  padding: 0.5rem 1rem;
-  margin-left: 1rem;
-  margin-bottom: 2rem;
-  background-color: #ddf1f9;
-  list-style: none;
-  border-radius: 20px;
-} */
-/* text-align: end; */
 
 /* message */
 
@@ -125,42 +182,74 @@ body {
 
 .sender-name {
   font-weight: bold;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   margin-bottom: 0.5rem;
-  color: #044c6b;
+  text-align: left;
 }
 
 .timestamp {
   font-size: 0.7rem;
   margin-top: 0.5rem;
-  color: rgb(71, 71, 71);
+  text-align: end;
 }
 
 .send-container {
   display: flex;
   align-items: center;
   padding: 10px;
-  background-color: whitesmoke;
+  background-color: #d7fcff;
+  border-radius: 0 0 10px 10px;
+}
+
+#groups-list{
+  height: 76vh;
+  overflow-y: auto;
+}
+
+#groups-list::-webkit-scrollbar {
+  width: 12px;
+}
+
+#groups-list::-webkit-scrollbar-track {
+  background: #ddf1f9;
+}
+
+#groups-list::-webkit-scrollbar-thumb {
+  background-color: #044c6b5e;
   border-radius: 10px;
+}
+
+#groups-list::-webkit-scrollbar-thumb:hover {
+  background-color: #0e6d96;
 }
 
 #message-input {
   flex: 1;
-  padding: 8px;
+  padding: 0.7rem 1rem;
   margin-right: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: none;
+  border-radius: 15px;
   font-size: 16px;
+  outline: none;
+  color: black;
 }
 
 .send-button {
-  padding: 8px 12px;
-  background-color: #007bff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.5rem;
+  background-color: #044c6b;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 20px;
   cursor: pointer;
   font-size: 16px;
+}
+
+.send-button:hover {
+  background-color: #096d97;
+  cursor: pointer;
 }
 
 .container {
@@ -180,17 +269,32 @@ body {
 }
 
 .group-container li {
-  margin-top: 1rem;
-  padding: 1rem;
-  background-color: #d7f3ff;
-  border-radius: 10px;
+  padding: 1.5rem 1rem;
+  background-color: #f1fbff;
   display: flex;
   justify-content: space-between;
   cursor: pointer;
+  border-bottom: 1px solid rgb(200, 200, 200);
+  font-weight: 500;
+  font-size: 1.2rem;
+  font-family: inherit;
+}
+
+.group-container li span {
+  background-color: #0c6287;
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 10px;
+  font-weight: 100;
+  font-size: 0.8rem;
+}
+
+.groups-list li {
+  background-color: red;
 }
 
 .group-container li:hover {
-  background-color: #beebfe;
+  background-color: #e5f4fc;
 }
 
 .group-container__header {
@@ -284,7 +388,7 @@ body {
 
 .group-form__div form input,
 .edit-group-form__div form input {
-  background-color: rgb(234, 232, 232);
+  background-color: #ddf1f9;
   margin-bottom: 2rem;
   margin-left: 2rem;
   margin-right: 2rem;
@@ -303,8 +407,30 @@ body {
   overflow-y: auto;
   height: 8rem;
   margin-bottom: 2rem;
-  border: 1px solid grey;
+  border: 1px solid rgb(174, 174, 174);
   margin: 0.5rem;
+  border-radius: 10px;
+}
+
+#editList::-webkit-scrollbar,
+#userList::-webkit-scrollbar {
+  width: 12px;
+}
+
+#editList::-webkit-scrollbar-track,
+#userList::-webkit-scrollbar-track {
+  background: #ddf1f9;
+}
+
+#editList::-webkit-scrollbar-thumb,
+#userList::-webkit-scrollbar-thumb {
+  background-color: #044c6b;
+  border-radius: 10px;
+}
+
+#editList::-webkit-scrollbar-thumb:hover,
+#userList::-webkit-scrollbar-thumb:hover {
+  background-color: #0e6d96;
 }
 
 #userList li,

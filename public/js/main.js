@@ -37,6 +37,12 @@ function sendMessage(event) {
       return response.json();
     })
     .then((data) => {
+      if (+groupId === 0) {
+        getMessage();
+        console.log("inside");
+      } else {
+        showGroupMessages(groupId);
+      }
       messageForm.reset();
     })
     .catch((err) => {
@@ -45,6 +51,8 @@ function sendMessage(event) {
 }
 function logout() {
   localStorage.removeItem("token");
+  localStorage.removeItem("messages");
+  localStorage.removeItem("groupId");
   window.location.href = "/public/signup.html";
 }
 
@@ -114,6 +122,7 @@ function displayMessages(messages, userId) {
     const messageWrapper = document.createElement("div");
     messageWrapper.className = "message_wrapper";
     if (message.userId === userId) {
+      message.name = "You";
       messageElement.classList.add("sender_class");
     } else {
       messageElement.classList.add("receiver_class");
@@ -158,6 +167,8 @@ async function showGroup() {
   const data = await groupsResponse.json();
   const userId = data.user.id;
 
+  setUser(data.user.name);
+  groupList.innerHTML = "";
   const commonGroupItem = document.createElement("li");
   commonGroupItem.textContent = "Common Group";
   commonGroupItem.className = "clickable";
@@ -198,6 +209,9 @@ async function showGroupChat(id, userId) {
 }
 
 async function setupGroup(groupId, userId) {
+  document.querySelector(".send-container").style.display = "flex";
+  document.querySelector(".chat-name").style.display = "flex";
+
   const token = localStorage.getItem("token");
   if (groupId === 0) {
     groupName.innerHTML = "";
@@ -215,7 +229,6 @@ async function setupGroup(groupId, userId) {
       }
     );
     const data = await response.json();
-    // console.log(data.user);
     groupName.innerHTML = "";
     groupHeader.innerText = data.group.name;
     groupName.appendChild(groupHeader);
@@ -244,7 +257,6 @@ function createGroup(event) {
 
   const data = {
     name: groupName,
-    membersNo: selectedUsers.length + 1,
     membersIds: selectedUsers,
   };
 
@@ -258,7 +270,11 @@ function createGroup(event) {
   })
     .then((response) => {
       createGroupForm.reset();
-      alert(response);
+      return response.json();
+    })
+    .then((data) => {
+      showGroup();
+      alert(data.message);
     })
     .catch((err) => {
       console.log(err);
@@ -320,7 +336,6 @@ async function getGroupDetails(groupId) {
     }
   );
   const responseData = await userResponse.json();
-  console.log(responseData);
   document.getElementById("edit-group-name").value = responseData.groupName;
   const editList = document.getElementById("editList");
   editList.innerHTML = "";
@@ -378,6 +393,7 @@ function editGroup(event) {
     body: JSON.stringify(data),
   })
     .then((response) => {
+      showGroup();
       return response.json();
     })
     .then((data) => {
@@ -389,7 +405,12 @@ function editGroup(event) {
 }
 
 // setInterval(() => {
-//   getMessage();
+//   const groupNo = localStorage.getItem("groupId");
+//   if (+groupNo === 0) {
+//     getMessage();
+//   } else {
+//     showGroupMessages(groupNo);
+//   }
 // }, 1000);
 
 createBtn.addEventListener("click", function () {
@@ -438,6 +459,11 @@ window.addEventListener("click", function (event) {
   }
 });
 
+function setUser(userName) {
+  document.getElementById("user-name").style.display = "block";
+  document.getElementById("user-name").innerText = userName;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   if (localStorage.getItem("token") === null) {
     window.location.href = "/public/signup.html";
@@ -447,5 +473,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (groupNo) {
     const groupIdInt = parseInt(groupNo, 10);
     showGroupChat(groupIdInt);
+    document.querySelector(".welcome").style.display = "none";
+  } else {
+    document.querySelector(".send-container").style.display = "none";
+    document.querySelector(".chat-name").style.display = "none";
   }
 });

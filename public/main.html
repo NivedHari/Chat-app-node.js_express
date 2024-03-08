@@ -18,6 +18,7 @@
           ChatsApp<span class="material-symbols-outlined"> forum </span>
         </div>
         <div class="user-actions">
+          <span id="user-name"></span>
           <span id="logout"><a href="#">Logout</a></span>
         </div>
       </div>
@@ -38,7 +39,20 @@
         </div>
         <div class="chat-container">
           <div class="message-container" id="message-container">
-            <div class="message" id="messages"></div>
+            <div class="message" id="messages">
+              <div class="welcome">
+                <div>
+                  <img src="/public/image/welcome.svg" alt="SVG Image" />
+                </div>
+                <div>
+                  <span>Welcome to ChatsApp !</span
+                  ><span id="intro_second"
+                    >Where every message brings us closer. Start a conversation,
+                    share a smile!</span
+                  >
+                </div>
+              </div>
+            </div>
           </div>
           <form id="send-container" class="send-container">
             <input
@@ -47,7 +61,9 @@
               placeholder="Type your message..."
             />
             <input type="hidden" id="group_id" />
-            <button type="submit" class="send-button">Send</button>
+            <button type="submit" class="send-button">
+              <span class="material-symbols-outlined"> send </span>
+            </button>
           </form>
         </div>
       </div>
