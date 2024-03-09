@@ -1,3 +1,5 @@
+const { createServer } = require("http");
+const { Server } = require("socket.io");
 const express = require("express");
 require("dotenv").config();
 const helmet = require("helmet");
@@ -11,25 +13,37 @@ const Message = require("./models/message");
 const Group = require("./models/group");
 const GroupMember = require("./models/group-member");
 
+const socketService = require("./services/socket");
+
 const userRoutes = require("./routes/user");
 const messageRoutes = require("./routes/message");
 const pageRoutes = require("./routes/page");
 
 const app = express();
-app.use(
-  cors({
-    origin: "http://127.0.0.1:5500",
-  })
-);
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(express.static(path.join(__dirname, "public")));
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
 
 app.use("/user", userRoutes);
 app.use("/message", messageRoutes);
 app.use(pageRoutes);
+
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: ["https://admin.socket.io"],
+    credentials: true,
+  },
+});
+io.on("connection", socketService);
+
 
 User.hasMany(Message);
 Message.belongsTo(User, {
@@ -52,8 +66,8 @@ const PORT = process.env.PORT;
 sequelize
   .sync()
   .then(() => {
-    app.listen(PORT, function () {
-      console.log("Started application on port %d", PORT);
+    httpServer.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
     });
   })
   .catch((err) => console.log(err));

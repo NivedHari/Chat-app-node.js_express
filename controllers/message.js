@@ -22,8 +22,6 @@ exports.sendMessage = async (req, res, next) => {
       name: user.name,
       message: messageResponse.text,
     };
-    console.log(newMsg);
-
     return res
       .status(200)
       .json({ newMsg, message: "Message saved to database succesfully" });

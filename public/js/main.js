@@ -16,6 +16,21 @@ createGroupForm.addEventListener("submit", createGroup);
 editGroupForm.addEventListener("submit", editGroup);
 logoutBtn.addEventListener("click", logout);
 
+const socket = io(window.location.origin);
+socket.on("common-message", () => {
+  const groupId = document.getElementById("group_id").value;
+  if (+groupId === 0) {
+    getMessage();
+  }
+});
+
+socket.on("group-message", (GroupId) => {
+  const groupId = document.getElementById("group_id").value;
+  if (GroupId === groupId) {
+    showGroupMessages(groupId);
+  }
+});
+
 function sendMessage(event) {
   event.preventDefault();
   const message = document.getElementById("message-input").value;
@@ -38,9 +53,10 @@ function sendMessage(event) {
     })
     .then((data) => {
       if (+groupId === 0) {
+        socket.emit("new-common-message");
         getMessage();
-        console.log("inside");
       } else {
+        socket.emit("new-group-message", groupId);
         showGroupMessages(groupId);
       }
       messageForm.reset();
@@ -49,6 +65,9 @@ function sendMessage(event) {
       console.log(err);
     });
 }
+
+
+
 function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("messages");
@@ -451,17 +470,6 @@ function setUser(userName) {
   document.getElementById("user-name").style.display = "block";
   document.getElementById("user-name").innerText = userName;
 }
-
-setInterval(() => {
-  const groupNo = localStorage.getItem("groupId");
-  if (groupNo) {
-    if (+groupNo === 0) {
-      getMessage();
-    } else {
-      showGroupMessages(groupNo);
-    }
-  }
-}, 1000);
 
 document.addEventListener("DOMContentLoaded", () => {
   if (localStorage.getItem("token") === null) {
