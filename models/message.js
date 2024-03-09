@@ -16,12 +16,18 @@ const Message = sequelize.define(
       type: Sequelize.DATE,
       defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
     },
+    isImg: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+    },
+    imgUrl: {
+      type: Sequelize.STRING,
+    },
   },
   {
     timestamps: false,
-    tableName: 'messages' 
+    tableName: "messages",
   }
 );
-
 
 module.exports = Message;

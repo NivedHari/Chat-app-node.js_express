@@ -158,6 +158,26 @@ exports.getGroupMessages = async (req, res, next) => {
   const messages = groupMessages.map((message) => {
     const user = message.user;
     if (user) {
+      if (message.isImg) {
+        return {
+          id: message.id,
+          name: user.name,
+          userId: user.id,
+          message: message.text,
+          isImg: true,
+          imgUrl: message.imgUrl,
+          timestamp: message.date_time,
+        };
+      } else {
+        return {
+          id: message.id,
+          name: user.name,
+          userId: user.id,
+          message: message.text,
+          timestamp: message.date_time,
+        };
+      }
+    } else {
       return {
         id: message.id,
         name: user.name,

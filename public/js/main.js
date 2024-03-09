@@ -35,18 +35,22 @@ function sendMessage(event) {
   event.preventDefault();
   const message = document.getElementById("message-input").value;
   const groupId = document.getElementById("group_id").value;
-  const data = {
-    message,
-    groupId,
-  };
-  console.log(data);
+  const imageFile = document.getElementById("image-input").files[0];
+  const formData = new FormData();
+  formData.append("message", message);
+  formData.append("groupId", groupId);
+  if (imageFile) {
+    formData.append("image", imageFile);
+    formData.append("isImg", true);
+  } else {
+    formData.append("isImg", false);
+  }
   fetch(`/message/send`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
       Authorization: token,
     },
-    body: JSON.stringify(data),
+    body: formData,
   })
     .then((response) => {
       return response.json();
@@ -65,8 +69,6 @@ function sendMessage(event) {
       console.log(err);
     });
 }
-
-
 
 function logout() {
   localStorage.removeItem("token");
@@ -129,9 +131,6 @@ function displayMessages(messages, userId) {
   messages.forEach((message) => {
     const date = new Date(message.timestamp);
     const options = {
-      // year: "numeric",
-      // month: "short",
-      // day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
     };
@@ -158,12 +157,26 @@ function displayMessages(messages, userId) {
     const time = document.createElement("span");
     time.className = "timestamp";
     time.textContent = formattedDate;
-
-    const messageDiv = document.createElement("div");
-    messageDiv.className = "message_div";
-    messageDiv.appendChild(sender);
-    messageDiv.appendChild(messageContent);
-    messageDiv.appendChild(time);
+    let messageDiv;
+    if (message.isImg) {
+      console.log("Hai");
+      // contains image
+      messageDiv = document.createElement("div");
+      messageDiv.className = "message_div imgMsg";
+      const image = document.createElement("img");
+      image.src = message.imgUrl;
+      messageDiv.appendChild(sender);
+      messageDiv.appendChild(image);
+      messageDiv.appendChild(messageContent);
+      messageDiv.appendChild(time);
+    } else {
+      //not image
+      messageDiv = document.createElement("div");
+      messageDiv.className = "message_div";
+      messageDiv.appendChild(sender);
+      messageDiv.appendChild(messageContent);
+      messageDiv.appendChild(time);
+    }
 
     messageElement.appendChild(messageDiv);
     if (message.userId === userId) {

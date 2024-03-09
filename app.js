@@ -44,7 +44,6 @@ const io = new Server(httpServer, {
 });
 io.on("connection", socketService);
 
-
 User.hasMany(Message);
 Message.belongsTo(User, {
   constraints: true,
