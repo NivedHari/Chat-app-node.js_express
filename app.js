@@ -14,6 +14,8 @@ const Group = require("./models/group");
 const GroupMember = require("./models/group-member");
 
 const socketService = require("./services/socket");
+const cronService = require("./services/cronjob");
+cronService.job.start();
 
 const userRoutes = require("./routes/user");
 const messageRoutes = require("./routes/message");
@@ -36,12 +38,7 @@ app.use("/message", messageRoutes);
 app.use(pageRoutes);
 
 const httpServer = createServer(app);
-const io = new Server(httpServer, {
-  cors: {
-    origin: ["https://admin.socket.io"],
-    credentials: true,
-  },
-});
+const io = new Server(httpServer);
 io.on("connection", socketService);
 
 User.hasMany(Message);

@@ -30,6 +30,9 @@ socket.on("group-message", (GroupId) => {
     showGroupMessages(groupId);
   }
 });
+socket.on("new-group-created", () => {
+  showGroup();
+});
 
 function sendMessage(event) {
   event.preventDefault();
@@ -302,6 +305,7 @@ function createGroup(event) {
       return response.json();
     })
     .then((data) => {
+      socket.emit("new-group-created");
       showGroup();
       alert(data.message);
     })
