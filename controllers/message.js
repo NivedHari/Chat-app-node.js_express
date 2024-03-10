@@ -71,6 +71,7 @@ exports.getMessage = (req, res, next) => {
   let whereCondition = {};
   if (lastMsgId) {
     whereCondition = {
+      groupId: null,
       id: {
         [Op.gt]: lastMsgId,
       },
