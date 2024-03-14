@@ -11,7 +11,7 @@ exports.sendMessage = async (req, res, next) => {
   let newMsg = null;
 
   try {
-    if (groupId === 0) {
+    if (groupId == 0) {
       if (isImage) {
         const imageFile = req.file;
         const result = await uploadFile(imageFile);
@@ -76,7 +76,7 @@ exports.getMessage = (req, res, next) => {
         [Op.gt]: lastMsgId,
       },
     };
-  }else{
+  } else {
     whereCondition = {
       groupId: null,
     };

@@ -1,3 +1,4 @@
+//start of app.js
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const express = require("express");
