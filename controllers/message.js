@@ -11,7 +11,7 @@ exports.sendMessage = async (req, res, next) => {
   let newMsg = null;
 
   try {
-    if (groupId == 0) {
+    if (groupId === 0) {
       if (isImage) {
         const imageFile = req.file;
         const result = await uploadFile(imageFile);
@@ -76,12 +76,17 @@ exports.getMessage = (req, res, next) => {
         [Op.gt]: lastMsgId,
       },
     };
+  }else{
+    whereCondition = {
+      groupId: null,
+    };
   }
   Message.findAll({
     where: whereCondition,
     include: { model: User, attributes: ["name", "id"] },
   })
     .then((data) => {
+      console.log(data);
       const messages = data.map((msg) => {
         if (msg.isImg) {
           return {

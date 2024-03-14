@@ -162,7 +162,6 @@ function displayMessages(messages, userId) {
     time.textContent = formattedDate;
     let messageDiv;
     if (message.isImg) {
-      console.log("Hai");
       // contains image
       messageDiv = document.createElement("div");
       messageDiv.className = "message_div imgMsg";
@@ -235,6 +234,7 @@ async function showGroup() {
 
 async function showGroupChat(id, userId) {
   const groupId = id;
+  document.getElementById("group_id").value = groupId;
   setupGroup(groupId, userId);
   if (groupId === 0) {
     getMessage();
